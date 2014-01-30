@@ -71,16 +71,18 @@ class User extends UsersAppModel {
 	public $validationDomain = 'users';
 
 /**
+ * If email as username
+ *
+ */
+	public $emailAsUsername = false;
+/**
  * Validation parameters
  *
  * @var array
  */
 	public $validate = array(
 		'username' => array(
-			'required' => array(
-				'rule' => array('notEmpty'),
-				'required' => true, 'allowEmpty' => false,
-				'message' => 'Please enter a username.'),
+			'required' => array(false),
 			'alpha' => array(
 				'rule' => array('alphaNumeric'),
 				'message' => 'The username must be alphanumeric.'),
@@ -120,6 +122,9 @@ class User extends UsersAppModel {
  * @param string $ds Datasource
  */
 	public function __construct($id = false, $table = null, $ds = null) {
+		if (Configure::read("Users.emailAsUsername") === true) {
+			$this->emailAsUsername = true;
+		}
 		$this->_setupBehaviors();
 		$this->_setupValidation();
 		parent::__construct($id, $table, $ds);
@@ -158,6 +163,7 @@ class User extends UsersAppModel {
 				'required' => array('rule' => array('compareFields', 'new_password', 'confirm_password'), 'required' => true, 'message' => __d('users', 'The passwords are not equal.'))),
 			'old_password' => array(
 				'to_short' => array('rule' => 'validateOldPassword', 'required' => true, 'message' => __d('users', 'Invalid password.'))));
+
 	}
 
 /**
